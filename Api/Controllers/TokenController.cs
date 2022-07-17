@@ -13,12 +13,10 @@ namespace SharpScape.Api.Controllers
     {
         private readonly AppDbContext _context;
         private readonly Crypto _crypto;
-        private readonly ITokenService _tokenService;
-        public TokenController(AppDbContext userContext, Crypto crypto, ITokenService tokenService)
+        public TokenController(AppDbContext userContext, Crypto crypto)
         {
             this._context = userContext ?? throw new ArgumentNullException(nameof(userContext));
             this._crypto = crypto;
-            this._tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
         }
 
 
@@ -28,15 +26,16 @@ namespace SharpScape.Api.Controllers
         {
             if (tokenApiModel is null)
                 return BadRequest("Invalid client request");
+
             // string accessToken = tokenApiModel.AccessToken;
             string refreshToken = tokenApiModel.RefreshToken;
 
-            var principal = _tokenService.GetPrincipalFromExpiredToken(refreshToken);
+            var principal = _crypto.GetPrincipalFromExpiredToken(refreshToken);
             var username = principal.Identity.Name; //this is mapped to the Name claim by default
 
             var user = _context.Users.SingleOrDefault(u => u.Username == username);
 
-
+            //Check Refresh Token Authentications
             if (user == null)
                 return BadRequest("no user");
             if (user.RefreshToken != refreshToken)

@@ -133,4 +133,30 @@ public class Crypto
             return false;
         }
     }
+
+    /// <summary>
+    /// Checks for a valid Refresh Token. 
+    /// </summary>
+    /// <param name="token">Refresh Token</param>
+    /// <returns></returns>
+    /// <exception cref="SecurityTokenException"></exception>
+    public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false, //you might want to validate the audience and issuer depending on your use case
+            ValidateIssuer = false,
+            ValidateIssuerSigningKey = true,
+            ValidAlgorithms = _configuration.GetValue<string[]>("Jwt:Algorithms"),
+            IssuerSigningKey = new RsaSecurityKey(_rsaKeyProvider.PublicKey),
+            ValidateLifetime = false //here we are saying that we don't care about the token's expiration date
+        };
+        var tokenHandler = new JwtSecurityTokenHandler();
+        SecurityToken securityToken;
+        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
+        var jwtSecurityToken = securityToken as JwtSecurityToken;
+        if (jwtSecurityToken == null)
+            throw new SecurityTokenException("Invalid token");
+        return principal;
+    }
 }

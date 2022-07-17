@@ -15,13 +15,11 @@ public class AuthController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly Crypto _crypto;
-    private readonly ITokenService _tokenService;
 
-    public AuthController(AppDbContext context, Crypto crypto, ITokenService tokenService)
+    public AuthController(AppDbContext context, Crypto crypto)
     {
         _context = context;
         _crypto = crypto;
-        _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
     }
 
     [AllowAnonymous]
