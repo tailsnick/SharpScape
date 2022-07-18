@@ -8,6 +8,14 @@ namespace SharpScape.Website.Services
     {
         private static System.Timers.Timer aTimer;
 
+        public IAuthTokenProvider AuthToken { get; }
+
+
+        public RefreshTimer(IAuthTokenProvider authToken)
+        {
+            AuthToken = authToken;
+        }
+
         /// <summary>
         /// Sets up timer event for when the access token is about to expire. 
         /// </summary>
@@ -28,9 +36,11 @@ namespace SharpScape.Website.Services
         /// <param name="e"></param>
         private static void RefreshTokenEvent(Object source, ElapsedEventArgs e)
         {
-            
+
             //var result = await Http.PostAsJsonAsync("api/refresh", userLoginDto);
 
+
+            //await AuthStateProvider.GetAuthenticationStateAsync();
             //set the the old access token to the new one. 
         }
     }
